@@ -21,12 +21,13 @@ This will compile the C source files.
 ## Documentation of the Instruction Set Architecture (ISA)
 The documentation for the ISA is in the [custom_ISA_DOKU.txt](custom_ISA_DOKU.txt) file.
 
-# On Windows
-## Use the assembler to translate assembly into a binary:
+# Usage
+## On Windows
+### Use the assembler to translate assembly into a binary:
 `./ASM.exe ./testprogramm.asm test.bin -d  # with debug`
 `./ASM.exe ./testprogramm.asm test.bin    # without debug`
 
-## Run the emulator:
+### Run the emulator:
 `./CPU.exe test.bin -d  # with debug`
 `./CPU.exe test.bin     # without debug`
 
