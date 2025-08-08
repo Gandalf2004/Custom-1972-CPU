@@ -5,6 +5,9 @@
 ## Compile the assembler:
 `gcc ASSEMBLER.c -o ASM.exe -Os`
 
+## Doku Of the Instruction Set Archetecture (ISA)
+the Dokumentation for the ISA is in the [custom_ISA_DOKU.txt](custom_ISA_DOKU.txt) file
+
 # on Windows
 ## Use the assembler to translate assembly into a binary:
 `./ASM.exe ./testprogramm.asm test.bin -d  # with debug`
