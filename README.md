@@ -1,18 +1,23 @@
-# Compile
-On Windows you need the [MinGw Compiler](https://www.mingw-w64.org/) which is Gcc on Windows, and you need [Make for Windows](https://gnuwin32.sourceforge.net/packages/make.htm).
+# Install
+## Windows
+You need to install the [MinGw Compiler](https://www.mingw-w64.org/) which is GCC for Windows) and [Make for Windows](https://gnuwin32.sourceforge.net/packages/make.htm).
 
-For Linux you need `gcc`, you can install it with `sudo pacman -S gcc`; and you need `make`, you can install it with `sudo pacman -S make`.
+## Arch Linux
+Install GCC and Make using pacman:
+`sudo pacman -S gcc make`
 
-## Compile the CPU emulator:
-`gcc Custom_8bit_CPU_EMULATOR.c -o CPU.exe -Os`
+## Other Linux Distributions:
+Please check which package manager your distribution uses and install `gcc` and `make` accordingly.
 
-## Compile the assembler:
-`gcc ASSEMBLER.c -o ASM.exe -Os`
+
+
+
+If you have `make` and `gcc` you should open the console, go to the directory where you have all the files installed and run `make`  then the C source files sould be compieling
 
 ## Doku Of the Instruction Set Archetecture (ISA)
 the Dokumentation for the ISA is in the [custom_ISA_DOKU.txt](custom_ISA_DOKU.txt) file
 
-# on Windows
+# On Windows
 ## Use the assembler to translate assembly into a binary:
 `./ASM.exe ./testprogramm.asm test.bin -d  # with debug`
 `./ASM.exe ./testprogramm.asm test.bin    # without debug`
