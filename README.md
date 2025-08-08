@@ -3,6 +3,8 @@ On Windoes you need the [MinGw Compiler](https://www.mingw-w64.org/) which is Gc
 
 For Linux you need `gcc`
 
+and you need `[Make](https://gnuwin32.sourceforge.net/packages/make.htm)`
+
 ## Compile the CPU emulator:
 `gcc Custom_8bit_CPU_EMULATOR.c -o CPU.exe -Os`
 
