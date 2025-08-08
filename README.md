@@ -1,7 +1,7 @@
 # Compile
 On Windows you need the [MinGw Compiler](https://www.mingw-w64.org/) which is Gcc on Windows, and you need [Make for Windows](https://gnuwin32.sourceforge.net/packages/make.htm).
 
-For Linux you need `gcc`, you can install it with `sudo pacman -S gcc`; and `make`, you can install it with `sudo pacman -S make`.
+For Linux you need `gcc`, you can install it with `sudo pacman -S gcc`; and you need `make`, you can install it with `sudo pacman -S make`.
 
 ## Compile the CPU emulator:
 `gcc Custom_8bit_CPU_EMULATOR.c -o CPU.exe -Os`
