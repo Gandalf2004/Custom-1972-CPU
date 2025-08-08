@@ -3,177 +3,152 @@ Copyright © Martin H. Sharp; August 2025
 ISA Documentation
 
 
-is in spirit of :“A 1972 experimental microcontroller with CALL/RET stack support, small register file, and a RISC-style fixed-length instruction set — but with limited memory space for cost-saving.” at least in concept
 
+Concept:
+Inspired by a 1972 experimental microcontroller with CALL/RET stack support, a small register file, and a RISC-style fixed-length instruction set — but with a tiny 256-word memory for cost-saving.
 
 1. Registers
 Name	Size	Description
-RA	8-bit	Accumulator A (Primary general-purpose register)
+RA	8-bit	Accumulator A (primary ALU operand)
 RB	8-bit	General-purpose register B
 RC	8-bit	General-purpose register C
 RE	8-bit	General-purpose register E
 SP	8-bit	Stack Pointer (defaults to 0xFF, grows downward)
-IR	16-bit	Instruction Register (holds current instruction)
+IR	16-bit	Instruction Register (current instruction)
 PC	8-bit	Program Counter
 MAR	16-bit	Memory Address Register
 
-1.2 Register encoding:
-Name	CODE
-RA	0x1
-RB	0x2
-RC	0x3
-RE	0x4
-SP	0x5
+1.2 Register Encoding
+Name	Code
+RA	0x01
+RB	0x02
+RC	0x03
+RE	0x04
+SP	0x05
+
 
 
 2. Flags
-Name	Description
-ZF	Zero Flag: Set if result of an operation == 0
-NF	Negative Flag: Set if result < 0
-OF	Overflow Flag: Set if result exceeds 0-255
+Flag	Description
+ZF	Zero Flag — Set if result == 0
+NF	Negative Flag — Set if result < 0
+OF	Overflow Flag — Set if result > 255 or < 0
 
 
 
 3. Memory
 
-    256 memory locations: Addressed from 0x00 to 0xFF.
+    256 memory locations, addresses 0x00–0xFF.
 
-    Each location holds 16-bit words.
-
-    Locations 0xFF to 0xFD often used for variables/stack.
+    Each location is a 16-bit word.
 
     Stack grows downward from SP (default 0xFF).
+
+    Top stack area often used for local variables.
 
 
 
 
 4. Instruction Format
 
-    16-bit word per instruction
+    16-bit word per instruction:
 
-        Opcode (8 bits): High byte
+        High byte = Opcode (8 bits)
 
-        Operand (8 bits): Low byte (immediate, address, or register code)
+        Low byte = Operand (8 bits)
 
-        Format: [ Opcode (8 bits) ][ Operand (8 bits) ]
-
+    Format: [ OPCODE ][ OPERAND ]
 
 
 
 
 5. Instructions
 
-
-
 5.1 Data Movement
 Mnemonic	Opcode	Format	Description
-MOVR d,s	0x01	d:h-nibble, s:l-nibble	Move value from register s to register d
-MOVA addr	0x02	addr (8 bits)	Load mem[addr] (low 8 bits) into RA
-MOVB addr	0x03	addr (8 bits)	Load mem[addr] (low 8 bits) into RB
-MOVC addr	0x04	addr (8 bits)	Load mem[addr] (low 8 bits) into RC
-STORA addr	0x05	addr (8 bits)	Store RA into mem[addr]
-STORB addr	0x06	addr (8 bits)	Store RB into mem[addr]
-STORC addr	0x07	addr (8 bits)	Store RC into mem[addr]
-LDIMA imm	0x08	imm (8 bits)	Load immediate into RA
-LDIMB imm	0x09	imm (8 bits)	Load immediate into RB
-LDIMC imm	0x0A	imm (8 bits)	Load immediate into RC
-MOVA_PTRB	0x16	None		Load RA from memory[RB]
-STORA_PTRB	0x17	None		Store RA into memory[RB]
-PUSH reg	0x18	reg_code	Decrement SP; store reg at mem[SP]
-POP reg		0x19	reg_code 	Load mem[SP] into reg; increment SP
-
+MOVR d s	0x01	d=hi nibble,	Move from register s to register d
+			s=lo nibble	
+MOVA addr	0x02	addr (8-bit)	Load mem[addr] → RA
+MOVB addr	0x03	addr		Load mem[addr] → RB
+MOVC addr	0x04	addr		Load mem[addr] → RC
+MOVE addr	0x05	addr		Load mem[addr] → RE
+STORA addr	0x06	addr		Store RA → mem[addr]
+STORB addr	0x07	addr		Store RB → mem[addr]
+STORC addr	0x08	addr		Store RC → mem[addr]
+STORE addr	0x09	addr		Store RE → mem[addr]
+LDIMA imm	0x0A	imm		Load immediate imm → RA
+LDIMB imm	0x0B	imm		Load immediate imm → RB
+LDIMC imm	0x0C	imm		Load immediate imm → RC
+LDIME imm	0x0D	imm		Load immediate imm → RE
+MOVA_PTRB	0x19	None		Load RA from mem[RB]
+STORA_PTRB	0x1A	None		Store RA → mem[RB]
+PUSH reg	0x1B	reg_code	SP--, store reg at mem[SP]
+POP reg		0x1C	reg_code	Load mem[SP] → reg, SP++
 
 5.2 Control Flow
 Mnemonic	Opcode	Format	Description
-JMPN addr	0x0B	addr (8 bits)	Jump to addr if NF is set
-JMPZ addr	0x0C	addr (8 bits)	Jump to addr if ZF is set
-JMPO addr	0x0D	addr (8 bits)	Jump to addr if OF is set
-JMP addr	0x0E	addr (8 bits)	Unconditional jump
-CALL addr	0x14	addr (8 bits)	Call subroutine at addr (pushes PC to stack)
-RET	0x15	None	Return from subroutine (pops PC from stack)
+JMPN addr	0x0E	addr	Jump if NF=1
+JMPZ addr	0x0F	addr	Jump if ZF=1
+JMPO addr	0x10	addr	Jump if OF=1
+JMP addr	0x11	addr	Unconditional jump
+CALL addr	0x17	addr	Push PC, jump to addr
+RET		0x18	None	Pop PC from stack
 
+5.3 Arithmetic / Logic
+Mnemonic	Opcode	Format	Description
+ADD imm		0x12	imm	RA += imm (sets flags)
+SUB imm		0x13	imm	RA -= imm (sets flags)
+ADDR reg	0x14	reg_code	RA += reg (sets flags)
+SUBR reg	0x15	reg_code	RA -= reg (sets flags)
+ADDSP imm	0x1D	imm	SP += imm (no flags)
+SUBSP imm	0x1E	imm	SP -= imm (no flags)
 
-
-5.3 Arithmetic and Logic
-Mnemonic	Opcode	Format		Description
-ADD imm		0x0F	imm (8 bits)	RA += imm (sets flags)
-SUB imm		0x10	imm (8 bits)	RA -= imm (sets flags)
-ADDR reg	0x11	reg_code 	RA += reg (RA, RB, RC, SP); sets flags
-SUBR reg	0x12	reg_code	RA -= reg (RA, RB, RC, SP); sets flags
-ADDSP imm	0x1A	imm (8 bits)	SP += imm (stack grows upward) THIS DO NOT UPDATE FLAGS
-SUBSP imm	0x1B	imm (8 bits)	SP -= imm (stack grows downward THIS DO NOT UPDATE FLAGS
-
-
-
-5.4 I/O and Halt
-Mnemonic	Opcode	FORMAT	Description
-OUT		0x13	None	Output RA to console
+5.4 I/O & Halt
+Mnemonic	Opcode	Format	Description
+OUT		0x16	None	Output RA to console
 HLT		0xFF	None	Halt execution
+
+
 
 
 6. Stack Behavior
 
-    PUSH reg (0x18):
+    PUSH reg: SP--, store reg into mem[SP]
 
-        Decrements SP.
+    POP reg: Load mem[SP] into reg, SP++
 
-        Stores the content of reg at mem[SP].
+    CALL addr: Push PC, set PC=addr
 
-    POP reg (0x19):
+    RET: Pop PC from stack
 
-        Loads mem[SP] into reg.
+    ADDSP/SUBSP: Adjust SP without affecting flags
 
-        Increments SP.
 
-    ADDSP imm (0x1A):
+7. Flag Updates
 
-        SP += imm (grows stack upward).
+    Affected by: ADD, SUB, ADDR, SUBR
 
-    SUBSP imm (0x1B):
+    Rules:
 
-        SP -= imm (grows stack downward).
+        ZF: result == 0
 
-    CALL addr:
+        NF: result < 0
 
-        PUSH (PC+1) onto stack.
-
-        PC = addr.
-
-    RET:
-
-        POP PC from stack.
+        OF: result > 255 or < 0 (wraps at 8-bit)
 
 
 
-7. Condition Flags Behavior
-
-    Affected by ADD, SUB, ADDR, SUBR:
-
-        ZF: result == 0.
-
-        NF: result < 0.
-
-        OF: result overflowed 0-255.
-
-        Operations are 8-bit (wrap-around).
-
-
-
-
-Example Instruction Encoding
-
-
-Instruction	Binary (Hex)
-LDIMA 5		0x0805
+Example Encodings
+Instruction	Hex
+LDIMA 5		0x0A05
+MOVR RE RB 	0x0142
 MOVR RA RC	0x0113
-MOVR RC SP	0x0135
-JMPZ 0x10	0x0C10
-ADD 3		0x0F03
-CALL 0x0B	0x140B
-PUSH RA		0x1801
-POP RA		0x1901
-ADDSP 2		0x1A02
-SUBSP 1		0x1B01
+JMPZ 0x10	0x0F10
+ADD 3		0x1203
+CALL 0x0B	0x150B
+PUSH RA		0x1A01
+ADDSP 2		0x1C02
+
 
 
 Execution Model
@@ -192,8 +167,6 @@ Execution Model
 
 
 Summary:
-
-
 
 This ISA is a simple 8-bit architecture with:
 
@@ -215,13 +188,12 @@ This ISA is a simple 8-bit architecture with:
 
 
 
-
-
 Example Encoding
+
+;Copyright © Martin H. Sharp; August 2025 testprogram.asm
 
 ;---------------------------------------------------
 ; Entry point because the Cpu starts execution with address 0x00
-
 ;----------------------------------------------------
         CALL MAIN
         HLT            ; Halt program
@@ -236,75 +208,76 @@ Example Encoding
 ;   Returns with RA = operand1 + operand2
 ;   SP is unchanged so RET pops the correct return PC.
 ;--------------------------------------------------
-
 ADD@:
-    ;— fetch operand2 into RC (SP+1) —
-    MOVR RA SP
-    ADD   1
-    MOVR RB RA
-    MOVA_PTRB
-    ;OUT
-    MOVR RC RA
 
-    ;— fetch operand1 into RB (SP+2) —
-    MOVR RA SP
-    ADD   2
-    MOVR RB RA
-    MOVA_PTRB
-    ;OUT
-    MOVR RB RA
+        ;— fetch operand2 into RC (SP+1) —
+        MOVR RA SP
+        ADD   1
+        MOVR RB RA
+        MOVA_PTRB
+        ;OUT
+        MOVR RC RA
 
-    MOVR RA RB
-    ADDR RC
-    ;OUT
+        ;— fetch operand1 into RB (SP+2) —
+        MOVR RA SP
+        ADD   2
+        MOVR RB RA
+        MOVA_PTRB
+        ;OUT
+        MOVR RB RA
 
-    RET
+        MOVR RA RB      ; ADD the two operands together
+        ADDR RC
 
+        RET
 
 ;--------------------------------------------------
 ; MAIN PROGRAM
-;   Compute 5 + 3 and print the result via OUT.
+;   Compute 17 + 55 and print the result via OUT.
+;   preperes the stack to parse the operands to the ADD@ function
+;   Calls the Add; then cleans up the stack; and outs the result
 ;--------------------------------------------------
-
 MAIN:
-        ;— Push operand1  = 3 —
-        LDIMA   3
+        ;— Push operand1  = 17 —
+        LDIMA   17
         PUSH    RA
 
-        ;— push operand2 = 5 —
-        LDIMA   5
+        ;— push operand2 = 55 —
+        LDIMA   55
         PUSH    RA
 
         ;— call Add; result comes back in RA —
         CALL    ADD@
+        ADDSP 2         ; caller cleans the stack
+        
+        OUT             ; print RA (should be 72)
 
-        OUT             ; print RA (should be 8)
         RET
-
 
 
 
 binary file: 
 
-0x0000: 0x140F
+0x0000: 0x170F
 0x0001: 0xFF00
 0x0002: 0x0115
-0x0003: 0x0F01
+0x0003: 0x1201
 0x0004: 0x0121
-0x0005: 0x1600
+0x0005: 0x1900
 0x0006: 0x0131
 0x0007: 0x0115
-0x0008: 0x0F02
+0x0008: 0x1202
 0x0009: 0x0121
-0x000A: 0x1600
+0x000A: 0x1900
 0x000B: 0x0121
 0x000C: 0x0112
-0x000D: 0x1103
-0x000E: 0x1500
-0x000F: 0x0803
-0x0010: 0x1801
-0x0011: 0x0805
-0x0012: 0x1801
-0x0013: 0x1402
-0x0014: 0x1300
-0x0015: 0x1500
+0x000D: 0x1403
+0x000E: 0x1800
+0x000F: 0x0A11
+0x0010: 0x1B01
+0x0011: 0x0A37
+0x0012: 0x1B01
+0x0013: 0x1702
+0x0014: 0x1D02
+0x0015: 0x1600
+0x0016: 0x1800
