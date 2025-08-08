@@ -1,4 +1,7 @@
 # Compile
+On Windoes you need the [MinGw Compiler](https://www.mingw-w64.org/) which is Gcc on Windows
+For Linux you need `gcc`
+
 ## Compile the CPU emulator:
 `gcc Custom_8bit_CPU_EMULATOR.c -o CPU.exe -Os`
 
