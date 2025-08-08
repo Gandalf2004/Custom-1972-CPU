@@ -1,5 +1,6 @@
 # Compile
-On Windoes you need the [MinGw Compiler](https://www.mingw-w64.org/) which is Gcc on Windows
+On Windoes you need the [MinGw Compiler](https://www.mingw-w64.org/) which is Gcc on Windows.
+
 For Linux you need `gcc`
 
 ## Compile the CPU emulator:
