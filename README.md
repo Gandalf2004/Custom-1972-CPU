@@ -12,7 +12,7 @@ Please check which package manager your distribution uses and install `gcc` and 
 
 ------------------------------
 
-If you have both `make` and `gcc` installed, open your terminal, navigate to the directory where your files are located, and run:
+If you have both `make` and `gcc` installed, open your terminal, navigate to the directory where the source files of this project are located, and run:
 
 `make`
 
