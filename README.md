@@ -26,17 +26,27 @@ This will compile the C source files.
 The documentation for the ISA is in the [custom_ISA_DOKU.txt](custom_ISA_DOKU.txt) file.
 
 # Usage
+
 ## On Windows
 ### Use the assembler to translate assembly into a binary:
 ```
-./ASM.exe ./testprogramm.asm test.bin -d  # with debug
-./ASM.exe ./testprogramm.asm test.bin    # without debug
+.\ASM.exe .\testprogramm.asm test.bin -d  # with debug
+.\ASM.exe .\testprogramm.asm test.bin     # without debug
 ```
-
 ### Run the emulator:
 ```
-./CPU.exe test.bin -d  # with debug
-./CPU.exe test.bin     # without debug
+.\CPU.exe .\test.bin -d  # with debug
+.\CPU.exe .\test.bin     # without debug
 ```
 
-## On linux
+## On Linux
+### Use the assembler to translate assembly into a binary:
+```
+./ASM ./testprogramm.asm test.bin -d  # with debug
+./ASM ./testprogramm.asm test.bin     # without debug
+```
+### Run the emulator:
+```
+./CPU test.bin -d  # with debug
+./CPU test.bin     # without debug
+```
