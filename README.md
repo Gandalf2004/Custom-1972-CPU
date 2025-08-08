@@ -10,9 +10,13 @@ Install GCC and Make using pacman:
 Please check which package manager your distribution uses and install `gcc` and `make` accordingly.
 
 
+------------------------------
 
+If you have both `make` and `gcc` installed, open your terminal, navigate to the directory where your files are located, and run:
 
-If you have `make` and `gcc` you should open the console, go to the directory where you have all the files installed and run `make`  then the C source files sould be compieling
+`make`
+
+This will compile the C source files.
 
 ## Doku Of the Instruction Set Archetecture (ISA)
 the Dokumentation for the ISA is in the [custom_ISA_DOKU.txt](custom_ISA_DOKU.txt) file
