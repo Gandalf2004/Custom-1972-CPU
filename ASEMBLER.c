@@ -19,6 +19,8 @@
 #define MAX_TOKEN_LEN  64
 #define MAX_LINE_LEN   256
 
+const char *expected_ext = ".ec72asm";
+
 // Debug control (set via -d flag)
 typedef int dbg_t;
 dbg_t debug_mode = 0;
@@ -89,19 +91,25 @@ static void error(const char *msg, int line_no, const char *token);
 
 int main(int argc, char *argv[]) {
     if (argc < 3 || argc > 4) {
-        fprintf(stderr, "Usage: %s input.asm output.bin [-d]\n", argv[0]);
+        fprintf(stderr, "Usage: %s input.ec72asm output.bin [-d]\n", argv[0]);
         return EXIT_FAILURE;
     }
     if (argc == 4 && strcmp(argv[3], "-d") == 0) {
         debug_mode = 1;
     }
 
+    if (strlen(argv[1]) <= strlen(expected_ext) || strcmp(argv[1] + strlen(argv[1]) - strlen(expected_ext), expected_ext) != 0) {
+        fprintf(stderr, "%sError: Input file must have '%s' extension%s\n", RED, expected_ext, RESETCOLOR);
+        return EXIT_FAILURE;
+    }
     FILE *fin = fopen(argv[1], "r");
     if (!fin) {
         perror("Error opening input file");
         return EXIT_FAILURE;
     }
 
+
+    //tokenize and strip comments
     char raw[MAX_LINES][MAX_LINE_LEN];
     TokenLine_t lines[MAX_LINES];
     int line_count = 0;

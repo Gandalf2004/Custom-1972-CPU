@@ -1,6 +1,6 @@
 Copyright © Martin H. Sharp; August 2025
 
-ISA Documentation
+Instruction Set Architecture (ISA) of EC72(Emulator CPU 72) Documentation
 
 
 

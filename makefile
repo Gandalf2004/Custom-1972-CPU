@@ -32,10 +32,10 @@ CFLAGS := -Os
 
 # Source files and output binaries
 ASM_SRC := ASEMBLER.c
-ASM_EXE := ASM$(EXE_EXT)
+ASM_EXE := EC72ASM$(EXE_EXT)
 
 CPU_SRC := Custom_8bit_CPU_EMULATOR.c
-CPU_EXE := CPU$(EXE_EXT)
+CPU_EXE := EC72CPU$(EXE_EXT)
 
 HXDMP_SRC := hexdump.c
 HXDMP_EXE := dump$(EXE_EXT)
