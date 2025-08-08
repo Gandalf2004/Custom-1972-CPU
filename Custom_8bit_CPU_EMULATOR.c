@@ -40,9 +40,10 @@ uint8_t bus = 0;
 
 // Opcodes
 enum OPCODE {
-    MOVR = 0x01, MOVA, MOVB, MOVC,
-    STORA, STORB, STORC,
-    LDIMA, LDIMB, LDIMC,
+    MOVR = 0x01,
+    MOVA, MOVB, MOVC, MOVE,
+    STORA, STORB, STORC, STORE,
+    LDIMA, LDIMB, LDIMC, LDIME,
     JMPN, JMPZ, JMPO, JMP,
     ADD, SUB, ADDR, SUBR,
     OUT, CALL, RET, MOVA_PTRB,
@@ -117,12 +118,15 @@ void execute_instruction() {
         case MOVA: RA = memory[operand] & 0xFF; break;
         case MOVB: RB = memory[operand] & 0xFF; break;
         case MOVC: RC = memory[operand] & 0xFF; break;
+        case MOVE: RE = memory[operand] & 0xFF; break;
         case STORA: memory[operand] = RA; break;
         case STORB: memory[operand] = RB; break;
         case STORC: memory[operand] = RC; break;
+        case STORE: memory[operand] = RE; break;
         case LDIMA: RA = operand; break;
         case LDIMB: RB = operand; break;
         case LDIMC: RC = operand; break;
+        case LDIME: RE = operand; break;
         case JMPN: if (NF) PC = operand; break;
         case JMPZ: if (ZF) PC = operand; break;
         case JMPO: if (OF) PC = operand; break;
@@ -141,18 +145,21 @@ void execute_instruction() {
         }
         case CALL: {
             if (SP == 0) { printf("%sStack overflow%s\n" , RED, RESET); exit(1); }
-            //SP--;
-            memory[--SP] = PC;// pre-increment SP after fetching
+            uint16_t v = (uint16_t)(PC & (MEM_SIZE-1));        // only store low byte into stack cell
+            memory[--SP] = v;
+            if (DEBUG) printf("  [CALL] push return=0x%02X at mem[%u]\n", (uint8_t)v, SP);
             PC = operand;
             break;
         }
         case RET: {
             if (SP == MEM_SIZE-1) { printf("%sStack underflow%s\n", RED, RESET); exit(1); }
-            PC = memory[SP++]; // post-increment SP after fetching
+            uint16_t v = memory[SP++];
+            PC = (uint8_t)(v & (MEM_SIZE-1));
+            if (DEBUG) printf("  [RET] popped return=0x%02X from mem[%u]\n", (uint8_t)(v & 0xFF), SP-1);
             break;
         }
         case MOVA_PTRB: {
-            RA = memory[RB] & (MEM_SIZE-1);//anding with 0xff
+            RA = (uint8_t)(memory[RB] & (MEM_SIZE-1)); // load low byte of memory[RB];//anding with 0xff
             break;
         }
         case STORA_PTRB: {
@@ -165,8 +172,9 @@ void execute_instruction() {
                 printf("%sStack overflow%s\n", RED, RESET);
                 exit(1);
             }
-            //SP--;                     // move SP down first
-            memory[--SP] = *reg;        // then store
+            uint16_t v = (uint16_t)(*reg & (MEM_SIZE-1));
+            memory[--SP] = v;
+            if (DEBUG) printf("  [PUSH] push 0x%02X into mem[%u]\n", (uint8_t)v, SP);
             break;
         }
         case POP: {
@@ -175,8 +183,9 @@ void execute_instruction() {
                 printf("%sStack underflow%s\n", RED, RESET);
                 exit(1);
             }
-            *reg = memory[SP++];        // read top
-            //SP++;                     // then move SP up
+             uint16_t v = memory[SP++];
+            *reg = (uint8_t)(v & (MEM_SIZE-1));
+            if (DEBUG) printf("  [POP] pop 0x%02X from mem[%u]\n", (uint8_t)(v & 0xFF), SP-1);
             break;
         }
         case ADDSP:{

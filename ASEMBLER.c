@@ -45,25 +45,28 @@ static const struct { const char *name; Register_t code; } register_table[] = {
 
 // Opcodes
 typedef enum {
-    OP_MOVR = 0x01, OP_MOVA, OP_MOVB, OP_MOVC,
-    OP_STORA, OP_STORB, OP_STORC,
-    OP_LDIMA, OP_LDIMB, OP_LDIMC,
-    OP_JMPN, OP_JMPZ, OP_JMPO, OP_JMP,
-    OP_ADD, OP_SUB, OP_ADDR, OP_SUBR,
-    OP_OUT, OP_CALL, OP_RET, OP_MOVA_PTRB,
-    OP_STORA_PTRB, OP_PUSH, OP_POP, OP_ADDSP, OP_SUBSP, OP_HLT = 0xFF
+    OP_MOVR = 0x01,
+    OP_MOVA,        OP_MOVB,        OP_MOVC,    OP_MOVE,
+    OP_STORA,       OP_STORB,       OP_STORC,   OP_STORE,
+    OP_LDIMA,       OP_LDIMB,       OP_LDIMC,   OP_LDIME,
+    OP_JMPN,        OP_JMPZ,        OP_JMPO,    OP_JMP,
+    OP_ADD,         OP_SUB,         OP_ADDR,    OP_SUBR,
+    OP_OUT,         OP_CALL,        OP_RET,     OP_MOVA_PTRB,
+    OP_STORA_PTRB,  OP_PUSH,        OP_POP,     OP_ADDSP,
+    OP_SUBSP,       OP_HLT = 0xFF
 } Opcode_t;
 
 static const struct { const char *name; Opcode_t code; } opcode_table[] = {
-    {"MOVR", OP_MOVR}, {"MOVA", OP_MOVA}, {"MOVB", OP_MOVB}, {"MOVC", OP_MOVC},
-    {"STORA", OP_STORA}, {"STORB", OP_STORB}, {"STORC", OP_STORC},
-    {"LDIMA", OP_LDIMA}, {"LDIMB", OP_LDIMB}, {"LDIMC", OP_LDIMC},
-    {"JMPN", OP_JMPN}, {"JMPZ", OP_JMPZ}, {"JMPO", OP_JMPO}, {"JMP", OP_JMP},
-    {"ADD", OP_ADD}, {"SUB", OP_SUB}, {"ADDR", OP_ADDR}, {"SUBR", OP_SUBR},
-    {"OUT", OP_OUT}, {"CALL", OP_CALL}, {"RET", OP_RET},
-    {"MOVA_PTRB", OP_MOVA_PTRB}, {"STORA_PTRB", OP_STORA_PTRB},
-    {"PUSH", OP_PUSH}, {"POP", OP_POP}, {"ADDSP", OP_ADDSP}, {"SUBSP", OP_SUBSP},
-    {"HLT", OP_HLT}
+    {"MOVR", OP_MOVR},      {"MOVA", OP_MOVA},      {"MOVB", OP_MOVB},
+    {"MOVC", OP_MOVC},      {"STORA", OP_STORA},    {"STORB", OP_STORB},
+    {"STORC", OP_STORC},    {"LDIMA", OP_LDIMA},    {"LDIMB", OP_LDIMB}, 
+    {"LDIMC", OP_LDIMC},    {"JMPN", OP_JMPN},      {"JMPZ", OP_JMPZ},
+    {"JMPO", OP_JMPO},      {"JMP", OP_JMP},        {"ADD", OP_ADD}, 
+    {"SUB", OP_SUB},        {"ADDR", OP_ADDR},      {"SUBR", OP_SUBR},
+    {"OUT", OP_OUT},        {"CALL", OP_CALL},      {"RET", OP_RET},
+    {"MOVA_PTRB", OP_MOVA_PTRB},        {"STORA_PTRB", OP_STORA_PTRB},
+    {"PUSH", OP_PUSH},      {"POP", OP_POP},        {"ADDSP", OP_ADDSP},
+    {"SUBSP", OP_SUBSP},    {"HLT", OP_HLT}
 };
 
 // Token container
@@ -144,6 +147,7 @@ int main(int argc, char *argv[]) {
     int out_count = 0;
 
     for (int i = 0; i < line_count; i++) {
+
         TokenLine_t *tl = &lines[i];
         if (tl->count == 0) continue;
         char *mnemonic = tl->tok[0];
@@ -169,9 +173,9 @@ int main(int argc, char *argv[]) {
                 break;
             }
 
-            case OP_MOVA: case OP_MOVB: case OP_MOVC:
-            case OP_STORA: case OP_STORB: case OP_STORC:
-            case OP_LDIMA: case OP_LDIMB: case OP_LDIMC:
+            case OP_MOVA: case OP_MOVB: case OP_MOVC: case OP_MOVE:
+            case OP_STORA: case OP_STORB: case OP_STORC: case OP_STORE:
+            case OP_LDIMA: case OP_LDIMB: case OP_LDIMC: case OP_LDIME:
             case OP_ADD: case OP_SUB: case OP_JMP:
             case OP_JMPN: case OP_JMPZ: case OP_JMPO:
             case OP_ADDSP: case OP_SUBSP:
