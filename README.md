@@ -30,23 +30,23 @@ The documentation for the ISA is in the [custom_ISA_DOKU.txt](custom_ISA_DOKU.tx
 ## On Windows
 ### Use the assembler to translate assembly into a binary:
 ```
-.\ASM.exe .\testprogramm.asm test.bin -d  # with debug
-.\ASM.exe .\testprogramm.asm test.bin     # without debug
+.\EC72ASM.exe .\testprogramm.ec72asm test.bin -d  # with debug
+.\EC72ASM.exe .\testprogramm.ec72asm test.bin     # without debug
 ```
 ### Run the emulator:
 ```
-.\CPU.exe .\test.bin -d  # with debug
-.\CPU.exe .\test.bin     # without debug
+.\EC72CPU.exe .\test.bin -d  # with debug
+.\EC72CPU.exe .\test.bin     # without debug
 ```
 
 ## On Linux
 ### Use the assembler to translate assembly into a binary:
 ```
-./ASM ./testprogramm.asm test.bin -d  # with debug
-./ASM ./testprogramm.asm test.bin     # without debug
+./EC72ASM ./testprogramm.ec72asm test.bin -d  # with debug
+./EC72ASM ./testprogramm.ec72asm test.bin     # without debug
 ```
 ### Run the emulator:
 ```
-./CPU test.bin -d  # with debug
-./CPU test.bin     # without debug
+./EC72CPU test.bin -d  # with debug
+./EC72CPU test.bin     # without debug
 ```
