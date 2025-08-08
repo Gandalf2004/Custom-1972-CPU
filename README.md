@@ -18,8 +18,8 @@ If you have both `make` and `gcc` installed, open your terminal, navigate to the
 
 This will compile the C source files.
 
-## Doku Of the Instruction Set Archetecture (ISA)
-the Dokumentation for the ISA is in the [custom_ISA_DOKU.txt](custom_ISA_DOKU.txt) file
+## Documentation of the Instruction Set Architecture (ISA)
+The documentation for the ISA is in the [custom_ISA_DOKU.txt](custom_ISA_DOKU.txt) file.
 
 # On Windows
 ## Use the assembler to translate assembly into a binary:
