@@ -101,8 +101,8 @@ void execute_instruction() {
     uint8_t operand = IR & 0xFF;
 
     if (DEBUG){
-        printf("PC=%02X IR=%04X OPCODE=%02X OPERAND=%02X RA=%d RB=%d RC=%d RE=%d ZF=%d NF=%d OF=%d SP= %d\n",
-           PC-1, IR, opcode, operand, RA, RB, RC, RE, ZF, NF, OF, SP);
+        printf("%sPC=%02X IR=%04X %sOPCODE=%02X OPERAND=%02X %sRA=%d RB=%d RC=%d RE=%d %sZF=%d NF=%d OF=%d %sSP= %d%s\n",
+           MAGENTA, PC-1, IR, GREEN, opcode, operand, CYAN, RA, RB, RC, RE, YELLOW, ZF, NF, OF, BLUE, SP, RESET);
     }
 
     switch(opcode) {
@@ -147,7 +147,7 @@ void execute_instruction() {
             if (SP == 0) { printf("%sStack overflow%s\n" , RED, RESET); exit(1); }
             uint16_t v = (uint16_t)(PC & (MEM_SIZE-1));        // only store low byte into stack cell
             memory[--SP] = v;
-            if (DEBUG) printf("  [CALL] push return=0x%02X at mem[%u]\n", (uint8_t)v, SP);
+            if (DEBUG) printf("  [CALL] push return=0x%02X at mem[%s%u%s]\n", (uint8_t)v, BLUE, SP, RESET);
             PC = operand;
             break;
         }
@@ -155,7 +155,7 @@ void execute_instruction() {
             if (SP == MEM_SIZE-1) { printf("%sStack underflow%s\n", RED, RESET); exit(1); }
             uint16_t v = memory[SP++];
             PC = (uint8_t)(v & (MEM_SIZE-1));
-            if (DEBUG) printf("  [RET] popped return=0x%02X from mem[%u]\n", (uint8_t)(v & 0xFF), SP-1);
+            if (DEBUG) printf("  [RET] popped return=0x%02X from mem[%s%u%s]\n", (uint8_t)(v & 0xFF), BLUE, SP-1, RESET);
             break;
         }
         case MOVA_PTRB: {
@@ -174,7 +174,7 @@ void execute_instruction() {
             }
             uint16_t v = (uint16_t)(*reg & (MEM_SIZE-1));
             memory[--SP] = v;
-            if (DEBUG) printf("  [PUSH] push 0x%02X into mem[%u]\n", (uint8_t)v, SP);
+            if (DEBUG) printf("  [PUSH] push 0x%02X into mem[%s%u%s]\n", (uint8_t)v, BLUE, SP, RESET);
             break;
         }
         case POP: {
@@ -185,7 +185,7 @@ void execute_instruction() {
             }
              uint16_t v = memory[SP++];
             *reg = (uint8_t)(v & (MEM_SIZE-1));
-            if (DEBUG) printf("  [POP] pop 0x%02X from mem[%u]\n", (uint8_t)(v & 0xFF), SP-1);
+            if (DEBUG) printf("  [POP] pop 0x%02X from mem[%s%u%s]\n", (uint8_t)(v & 0xFF), BLUE, SP-1, RESET);
             break;
         }
         case ADDSP:{
