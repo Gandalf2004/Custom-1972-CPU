@@ -7,7 +7,8 @@
         HLT            ; Halt program
 
 ;--------------------------------------------------
-; SUBROUTINE: ADD@
+; SUBROUTINE: ADDOP
+;   Add oprerands
 ;   On entry stack (SP↓) holds:
 ;     [SP]     = return PC
 ;     [SP+1]   = operand2
@@ -16,7 +17,7 @@
 ;   Returns with RA = operand1 + operand2
 ;   SP is unchanged so RET pops the correct return PC.
 ;--------------------------------------------------
-ADD@:
+ADDOP:
 
         ;— fetch operand2 into RC (SP+1) —
         MOVR RA SP
@@ -55,9 +56,10 @@ MAIN:
         PUSH    RA
 
         ;— call Add; result comes back in RA —
-        CALL    ADD@
+        CALL    ADDOP
         ADDSP 2         ; caller cleans the stack
         
         OUT             ; print RA (should be 72)
+
 
         RET
