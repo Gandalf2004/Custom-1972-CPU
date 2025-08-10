@@ -46,7 +46,7 @@ ifeq ($(OS_NAME),Windows)
 all: $(ASM_EXE) $(CPU_EXE) $(HXDMP_EXE)
 	@echo "Built on $(OS_NAME)"
 else
-all: $(ASM_EXE) $(CPU_EXE)
+all: $(ASM_EXE) $(CPU_EXE) $(HXDMP_EXE)
 	@echo "Built on $(OS_NAME)"
 endif	
 
