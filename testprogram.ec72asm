@@ -1,8 +1,11 @@
 ;Copyright © Martin H. Sharp; August 2025; testprogram.ec72asm
 
 ;---------------------------------------------------
+; BOOT
 ; Entry point because the Cpu starts execution with address 0x00
 ;----------------------------------------------------
+        SSTUF 250
+        SSTOF 190      ; set overflow at 190 we let the underflow to default 255
         CALL MAIN
         HLT            ; Halt program
 

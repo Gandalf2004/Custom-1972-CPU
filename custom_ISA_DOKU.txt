@@ -17,6 +17,9 @@ SP	8-bit	Stack Pointer (defaults to 0xFF, grows downward)
 IR	16-bit	Instruction Register (current instruction)
 PC	8-bit	Program Counter
 MAR	16-bit	Memory Address Register
+STOFR	8-bit	Stack Overflow Register (just stores the address at where the overflow happens)
+STUFR	8-bit	Stack Underflow Register (just stores the address at where the underflow happens)
+
 
 1.2 Register Encoding
 Name	Code
@@ -43,6 +46,8 @@ OF	Overflow Flag — Set if result > 255 or < 0
     Each location is a 16-bit word.
 
     Stack grows downward from SP (default 0xFF).
+    
+    the STOFR and the STUFR store when the over- or underflow happends, and thus define the stack size
 
     Top stack area often used for local variables.
 
@@ -82,8 +87,16 @@ LDIMC imm	0x0C	imm		Load immediate imm → RC
 LDIME imm	0x0D	imm		Load immediate imm → RE
 MOVA_PTRB	0x19	None		Load RA from mem[RB]
 STORA_PTRB	0x1A	None		Store RA → mem[RB]
+
+
+5.2 Stack opreations
+Mnemonic	Opcode	Format	Description
 PUSH reg	0x1B	reg_code	SP--, store reg at mem[SP]
 POP reg		0x1C	reg_code	Load mem[SP] → reg, SP++
+ADDSP imm	0x1D	imm	SP += imm (no flags)
+SUBSP imm	0x1E	imm	SP -= imm (no flags)
+SSTOF addr	0x1F	addr	Sets STOFR should be ideally done at boot
+SSTUF addr	0x20	addr	sets STUFR should be ideally done at boot NOT later, additional it overwrites the SP with Operand
 
 5.2 Control Flow
 Mnemonic	Opcode	Format	Description
@@ -100,8 +113,7 @@ ADD imm		0x12	imm	RA += imm (sets flags)
 SUB imm		0x13	imm	RA -= imm (sets flags)
 ADDR reg	0x14	reg_code	RA += reg (sets flags)
 SUBR reg	0x15	reg_code	RA -= reg (sets flags)
-ADDSP imm	0x1D	imm	SP += imm (no flags)
-SUBSP imm	0x1E	imm	SP -= imm (no flags)
+
 
 5.4 I/O & Halt
 Mnemonic	Opcode	Format	Description
@@ -184,100 +196,3 @@ This ISA is a simple 8-bit architecture with:
 
     Immediate and memory-based addressing modes.
 
-
-
-
-
-Example Encoding
-
-;Copyright © Martin H. Sharp; August 2025 testprogram.asm
-
-;---------------------------------------------------
-; Entry point because the Cpu starts execution with address 0x00
-;----------------------------------------------------
-        CALL MAIN
-        HLT            ; Halt program
-
-;--------------------------------------------------
-; SUBROUTINE: ADD@
-;   On entry stack (SP↓) holds:
-;     [SP]     = return PC
-;     [SP+1]   = operand2
-;     [SP+2]   = operand1
-;
-;   Returns with RA = operand1 + operand2
-;   SP is unchanged so RET pops the correct return PC.
-;--------------------------------------------------
-ADD@:
-
-        ;— fetch operand2 into RC (SP+1) —
-        MOVR RA SP
-        ADD   1
-        MOVR RB RA
-        MOVA_PTRB
-        ;OUT
-        MOVR RC RA
-
-        ;— fetch operand1 into RB (SP+2) —
-        MOVR RA SP
-        ADD   2
-        MOVR RB RA
-        MOVA_PTRB
-        ;OUT
-        MOVR RB RA
-
-        MOVR RA RB      ; ADD the two operands together
-        ADDR RC
-
-        RET
-
-;--------------------------------------------------
-; MAIN PROGRAM
-;   Compute 17 + 55 and print the result via OUT.
-;   preperes the stack to parse the operands to the ADD@ function
-;   Calls the Add; then cleans up the stack; and outs the result
-;--------------------------------------------------
-MAIN:
-        ;— Push operand1  = 17 —
-        LDIMA   17
-        PUSH    RA
-
-        ;— push operand2 = 55 —
-        LDIMA   55
-        PUSH    RA
-
-        ;— call Add; result comes back in RA —
-        CALL    ADD@
-        ADDSP 2         ; caller cleans the stack
-        
-        OUT             ; print RA (should be 72)
-
-        RET
-
-
-
-binary file: 
-
-0x0000: 0x170F
-0x0001: 0xFF00
-0x0002: 0x0115
-0x0003: 0x1201
-0x0004: 0x0121
-0x0005: 0x1900
-0x0006: 0x0131
-0x0007: 0x0115
-0x0008: 0x1202
-0x0009: 0x0121
-0x000A: 0x1900
-0x000B: 0x0121
-0x000C: 0x0112
-0x000D: 0x1403
-0x000E: 0x1800
-0x000F: 0x0A11
-0x0010: 0x1B01
-0x0011: 0x0A37
-0x0012: 0x1B01
-0x0013: 0x1702
-0x0014: 0x1D02
-0x0015: 0x1600
-0x0016: 0x1800

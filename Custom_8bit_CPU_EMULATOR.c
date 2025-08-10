@@ -22,10 +22,13 @@ uint16_t memory[MEM_SIZE];
 
 // Registers
 uint8_t RA = 0, RB = 0, RC = 0, RE = 0;
-uint16_t IR = 0;  // Instruction Register
-uint8_t PC = 0;   // Program Counter
+uint16_t IR  = 0; // Instruction Register
+uint8_t PC   = 0; // Program Counter
 uint16_t MAR = 0; // Memory Address Register
-uint8_t SP = (MEM_SIZE -1);
+uint8_t STOFR = 0;// STack OverFlow Register
+uint8_t STUFR = (MEM_SIZE -1);// STack UnderFlow Register
+uint8_t SP;
+
 
 // Flags
 bool ZF = false; // Zero Flag
@@ -48,7 +51,7 @@ enum OPCODE {
     ADD, SUB, ADDR, SUBR,
     OUT, CALL, RET, MOVA_PTRB,
     STORA_PTRB, PUSH, POP, 
-    ADDSP, SUBSP, HLT = 0xFF
+    ADDSP, SUBSP, SSTOF, SSTUF, HLT = 0xFF
 };
 
 // Helpers
@@ -101,8 +104,8 @@ void execute_instruction() {
     uint8_t operand = IR & 0xFF;
 
     if (DEBUG){
-        printf("%sPC=%02X IR=%04X %sOPCODE=%02X OPERAND=%02X %sRA=%d RB=%d RC=%d RE=%d %sZF=%d NF=%d OF=%d %sSP= %d%s\n",
-           MAGENTA, PC-1, IR, GREEN, opcode, operand, CYAN, RA, RB, RC, RE, YELLOW, ZF, NF, OF, BLUE, SP, RESET);
+        printf("%sPC=%02X IR=%04X STOFR=%d STUFR=%d %sOPCODE=%02X OPERAND=%02X %sRA=%d RB=%d RC=%d RE=%d %sZF=%d NF=%d OF=%d %sSP= %d%s\n",
+           MAGENTA, PC-1, IR, STOFR, STUFR, GREEN, opcode, operand, CYAN, RA, RB, RC, RE, YELLOW, ZF, NF, OF, BLUE, SP, RESET);
     }
 
     switch(opcode) {
@@ -144,7 +147,10 @@ void execute_instruction() {
             break;
         }
         case CALL: {
-            if (SP == 0) { printf("%sStack overflow%s\n" , RED, RESET); exit(1); }
+            if ( (SP == STOFR) || (SP == 0) ) {
+                printf("%sStack overflow%s\n" , RED, RESET);
+                exit(1);
+            }
             uint16_t v = (uint16_t)(PC & (MEM_SIZE-1));        // only store low byte into stack cell
             memory[--SP] = v;
             if (DEBUG) printf("  [CALL] push return=0x%02X at mem[%s%u%s]\n", (uint8_t)v, BLUE, SP, RESET);
@@ -168,7 +174,7 @@ void execute_instruction() {
         }
         case PUSH: {
             uint8_t *reg = get_register(operand);
-            if (SP == 0) { 
+            if ( (SP == STOFR) || (SP == 0) ) { 
                 printf("%sStack overflow%s\n", RED, RESET);
                 exit(1);
             }
@@ -179,7 +185,7 @@ void execute_instruction() {
         }
         case POP: {
             uint8_t *reg = get_register(operand);
-            if (SP == MEM_SIZE-1) {     
+            if ( (SP == STUFR ) || (SP == (MEM_SIZE -1) ) ) {     
                 printf("%sStack underflow%s\n", RED, RESET);
                 exit(1);
             }
@@ -189,7 +195,7 @@ void execute_instruction() {
             break;
         }
         case ADDSP:{
-            if (SP == MEM_SIZE-1) {     
+            if ( (SP == STUFR ) || (SP == (MEM_SIZE -1) ) ) {     
                 printf("%sStack underflow%s\n", RED, RESET);
                 exit(1);
             }
@@ -197,7 +203,7 @@ void execute_instruction() {
             break;
         }
         case SUBSP:{
-            if (SP == 0) { 
+            if ( (SP == STOFR) || (SP == 0) ) { 
                 printf("%sStack overflow%s\n", RED, RESET);
                 exit(1);
             }
@@ -205,6 +211,23 @@ void execute_instruction() {
             break;
         }
         case OUT: printf("%sOUT: %d%s\n", GREEN, RA, RESET); break;
+        case SSTOF:{// Set STack OverFlow
+            if(operand > 255 || operand < 0) {
+                printf("%sIllegal operand for SSTOF(0x%02X): 0x%02X%s\n", RED, opcode, operand, RESET);
+                exit(1);
+            }
+            STOFR = operand;
+            break;
+        };
+        case SSTUF:{// Set STack UnderFlow
+            if(operand > 255 || operand < 0) {
+                printf("%sIllegal operand for SSTUF(0x%02X): 0x%02X%s\n", RED, opcode, operand, RESET);
+                exit(1);
+            }
+            STUFR = operand;
+            SP = operand;
+            break;
+        };
         case HLT: printf("%sProgramm Halted Execution%s\n", YELLOW, RESET); exit(0);
         default: printf("%sUnknown opcode: 0x%02X%s\n", RED, opcode, RESET); exit(1);
     }
@@ -221,6 +244,7 @@ int main(int argc, char* argv[]) {
         printf("%sDEBUG%s mode enabled\n", MAGENTA, RESET);
     }
 
+    SP = STUFR;
 
     load_program(argv[1]);
 

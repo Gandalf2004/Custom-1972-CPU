@@ -55,7 +55,7 @@ typedef enum {
     OP_ADD,         OP_SUB,         OP_ADDR,    OP_SUBR,
     OP_OUT,         OP_CALL,        OP_RET,     OP_MOVA_PTRB,
     OP_STORA_PTRB,  OP_PUSH,        OP_POP,     OP_ADDSP,
-    OP_SUBSP,       OP_HLT = 0xFF
+    OP_SUBSP,       OP_SSTOF,       OP_SSTUF,   OP_HLT = 0xFF
 } Opcode_t;
 
 static const struct { const char *name; Opcode_t code; } opcode_table[] = {
@@ -68,7 +68,8 @@ static const struct { const char *name; Opcode_t code; } opcode_table[] = {
     {"OUT", OP_OUT},        {"CALL", OP_CALL},      {"RET", OP_RET},
     {"MOVA_PTRB", OP_MOVA_PTRB},        {"STORA_PTRB", OP_STORA_PTRB},
     {"PUSH", OP_PUSH},      {"POP", OP_POP},        {"ADDSP", OP_ADDSP},
-    {"SUBSP", OP_SUBSP},    {"HLT", OP_HLT}
+    {"SUBSP", OP_SUBSP},    {"SSTOF", OP_SSTOF},    {"SSTUF", OP_SSTUF},
+    {"HLT", OP_HLT}
 };
 
 // Token container
@@ -186,7 +187,7 @@ int main(int argc, char *argv[]) {
             case OP_LDIMA: case OP_LDIMB: case OP_LDIMC: case OP_LDIME:
             case OP_ADD: case OP_SUB: case OP_JMP:
             case OP_JMPN: case OP_JMPZ: case OP_JMPO:
-            case OP_ADDSP: case OP_SUBSP:
+            case OP_ADDSP: case OP_SUBSP: case OP_SSTOF: case OP_SSTUF:
             case OP_CALL: {
 
                 if (tl->count < 2) error("Missing operand", i, mnemonic);
