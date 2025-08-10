@@ -157,8 +157,8 @@ MOVR RE RB 	0x0142
 MOVR RA RC	0x0113
 JMPZ 0x10	0x0F10
 ADD 3		0x1203
-CALL 0x0B	0x150B
-PUSH RA		0x1A01
+CALL 0x0B	0x170B
+PUSH RA		0x1B01
 ADDSP 2		0x1C02
 
 
@@ -195,5 +195,4 @@ This ISA is a simple 8-bit architecture with:
     Flag-based conditional execution
 
     Immediate and memory-based addressing modes.
-
 
