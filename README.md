@@ -70,3 +70,5 @@ The documentation for the ISA is in the [custom_ISA_DOKU.txt](custom_ISA_DOKU.tx
 ./EC72CPU test.bin -d  # with debug
 ./EC72CPU test.bin     # without debug
 ```
+## syntax highlighting for the Custom Assembly
+look at my other project: [Syntax-highlighter-for-EC72ASM](https://github.com/Gandalf2004/Syntax-highlighter-for-EC72ASM)
