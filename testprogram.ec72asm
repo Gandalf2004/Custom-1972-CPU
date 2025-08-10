@@ -1,4 +1,4 @@
-;Copyright © Martin H. Sharp; August 2025 testprogram.asm
+;Copyright © Martin H. Sharp; August 2025; testprogram.ec72asm
 
 ;---------------------------------------------------
 ; Entry point because the Cpu starts execution with address 0x00
@@ -7,56 +7,57 @@
         HLT            ; Halt program
 
 ;--------------------------------------------------
-; SUBROUTINE: ADD@
+; SUBROUTINE: ADDOP
+;   add with 2 operands
 ;   On entry stack (SP↓) holds:
 ;     [SP]     = return PC
-;     [SP+1]   = operand2
-;     [SP+2]   = operand1
+;     [SP+1]   = operand1
+;     [SP+2]   = operand2
 ;
 ;   Returns with RA = operand1 + operand2
 ;   SP is unchanged so RET pops the correct return PC.
 ;--------------------------------------------------
 ADDOP:
 
-        ;— fetch operand2 into RC (SP+1) —
-        MOVR RA SP
-        ADD   1
-        MOVR RB RA
-        MOVA_PTRB
+        ;— fetch operand1 into RC (SP+1) — ; so basicly doing RC = mem[SP+1]
+        MOVR RA SP      ; RA = SP
+        ADD   1         ; RA +1
+        MOVR RB RA      ; RB = RA
+        MOVA_PTRB       ; RA = mem[RB]
         ;OUT
-        MOVR RC RA
+        MOVR RC RA      ; RC = RA
 
-        ;— fetch operand1 into RB (SP+2) —
-        MOVR RA SP
-        ADD   2
-        MOVR RB RA
-        MOVA_PTRB
+        ;— fetch operand2 into RB (SP+2) — ; so basicly doing RB = mem[SP+2]
+        MOVR RA SP      ; RA = SP
+        ADD   2         ; RA +2
+        MOVR RB RA      ; RB = RA
+        MOVA_PTRB       ; RA = mem[RB];
         ;OUT
-        MOVR RB RA
+        MOVR RB RA      ; RB = RA
 
-        MOVR RA RB      ; ADD the two operands together
-        ADDR RC
+        MOVR RA RB      ; RA = RB
+        ADDR RC         ; ADD the two operands together, RA += RC
 
         RET
 
 ;--------------------------------------------------
 ; MAIN PROGRAM
 ;   Compute 17 + 55 and print the result via OUT.
-;   preperes the stack to parse the operands to the ADD@ function
-;   Calls the Add; then cleans up the stack; and outs the result
+;   preperes the stack to parse the operands to the ADDOP function
+;   Calls the Addop; then cleans up the stack; and outs the result
 ;--------------------------------------------------
 MAIN:
-        ;— Push operand1  = 17 —
-        LDIMA   17
+        ;— Push operand2  = 55 —
+        LDIMA   55
         PUSH    RA
 
-        ;— push operand2 = 55 —
-        LDIMA   55
+        ;— push operand1 = 17 —
+        LDIMA   17
         PUSH    RA
 
         ;— call Add; result comes back in RA —
         CALL    ADDOP
-        ADDSP 2         ; caller cleans the stack
+        ADDSP 2         ; caller cleans the stack/and caller is expected to save registers  
         
         OUT             ; print RA (should be 72)
 
