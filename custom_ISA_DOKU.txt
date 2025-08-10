@@ -17,8 +17,8 @@ SP	8-bit	Stack Pointer (defaults to 0xFF, grows downward)
 IR	16-bit	Instruction Register (current instruction)
 PC	8-bit	Program Counter
 MAR	16-bit	Memory Address Register
-STOFR	8-bit	Stack Overflow Register (just stores the address at where the overflow happens)
-STUFR	8-bit	Stack Underflow Register (just stores the address at where the underflow happens)
+STOFR	8-bit	Stack Overflow Register (just stores the address of when the overflow happens)
+STUFR	8-bit	Stack Underflow Register (just stores the address of when the underflow happens)
 
 
 1.2 Register Encoding
@@ -195,4 +195,5 @@ This ISA is a simple 8-bit architecture with:
     Flag-based conditional execution
 
     Immediate and memory-based addressing modes.
+
 
