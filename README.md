@@ -29,6 +29,8 @@ make
 
 This will compile the C source files.
 
+------------------------------------------
+
 If you want to recompile the project just run:
 ```
 make clean
