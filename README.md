@@ -14,13 +14,31 @@ Please check which package manager your distribution uses and install `gcc` and 
 
 ------------------------------
 
-If you have both `make` and `gcc` installed, open your terminal, navigate to the directory where the source files of this project are located, and run:
 
+If you have both `make` and `gcc` installed, open your terminal, navigate to the directory where you want the source files of this project to be, and run
+```
+git clone https://github.com/Gandalf2004/Custom-1972-CPU.git
+```
+Or download the source files directly via the GitHub GUI
+
+
+If you have the source files installed open your terminal, navigate to the directory where the source files of this project are located, and run:
 ```
 make
 ```
 
 This will compile the C source files.
+
+If you want to recompile the project just run:
+```
+make clean
+```
+to delete the execulebles and then:
+```
+make
+```
+to recompile them
+
 
 ## Documentation of the Instruction Set Architecture (ISA)
 The documentation for the ISA is in the [custom_ISA_DOKU.txt](custom_ISA_DOKU.txt) file.
