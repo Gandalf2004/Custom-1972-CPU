@@ -1,11 +1,11 @@
-Copyright © Martin H. Sharp; August 2025
+Copyright © Martin H. Sharp; February 2026 ISA Version 1.1
 
 Instruction Set Architecture (ISA) of EC72(Emulator CPU 72) Documentation
 
 
 
 Concept:
-Inspired by a 1972 experimental microcontroller with CALL/RET stack support, a small register file, and a RISC-style fixed-length instruction set — but with a tiny 256-word memory for cost-saving.
+Inspired by a 1972 experimental microcontroller with CALL/RET stack support, a small register file, and a RISC-style fixed-length instruction set - but with a tiny 256-word memory for cost-saving.
 
 1. Registers
 Name	Size	Description
@@ -19,6 +19,7 @@ PC	8-bit	Program Counter
 MAR	16-bit	Memory Address Register
 STOFR	8-bit	Stack Overflow Register (just stores the address of when the overflow happens)
 STUFR	8-bit	Stack Underflow Register (just stores the address of when the underflow happens)
+FLAGS	8-bit	Stores ZF/NF/OF flags in these bits: 0=ZF, 1=NF, 2=OF
 
 
 1.2 Register Encoding
@@ -37,18 +38,14 @@ ZF	Zero Flag — Set if result == 0
 NF	Negative Flag — Set if result < 0
 OF	Overflow Flag — Set if result > 255 or < 0
 
-
+The FLAGS register allows saving/restoring flags via MOVF and LOADF
 
 3. Memory
 
     256 memory locations, addresses 0x00–0xFF.
-
     Each location is a 16-bit word.
-
     Stack grows downward from SP (default 0xFF).
-    
     the STOFR and the STUFR store when the over- or underflow happends, and thus define the stack size
-
     Top stack area often used for local variables.
 
 
@@ -57,11 +54,8 @@ OF	Overflow Flag — Set if result > 255 or < 0
 4. Instruction Format
 
     16-bit word per instruction:
-
         High byte = Opcode (8 bits)
-
         Low byte = Operand (8 bits)
-
     Format: [ OPCODE ][ OPERAND ]
 
 
@@ -87,6 +81,8 @@ LDIMC imm	0x0C	imm		Load immediate imm → RC
 LDIME imm	0x0D	imm		Load immediate imm → RE
 MOVA_PTRB	0x19	None		Load RA from mem[RB]
 STORA_PTRB	0x1A	None		Store RA → mem[RB]
+MOVF reg	0x21	reg		Copys FLAGS into reg
+LOADF reg	0x22	reg		Loads FLAGS from reg, updates ZF, NF, OF
 
 
 5.2 Stack opreations
@@ -138,15 +134,17 @@ HLT		0xFF	None	Halt execution
 
 7. Flag Updates
 
-    Affected by: ADD, SUB, ADDR, SUBR
+    Affected by: ADD, SUB, ADDR, SUBR, LOADF
 
     Rules:
-
         ZF: result == 0
-
         NF: result < 0
-
         OF: result > 255 or < 0 (wraps at 8-bit)
+
+    FLAGS register (8-bit):
+	Bit 0 = ZF
+	Bit 1 = NF
+	Bit 2 = OF
 
 
 
@@ -166,13 +164,9 @@ ADDSP 2		0x1C02
 Execution Model
 
     Fetch: IR = memory[PC], PC++
-
     Decode: Opcode (IR>>8), Operand (IR & 0xFF)
-
     Execute: Perform operation as defined by opcode
-
     Update Flags (for ALU operations)
-
     Repeat
 
 
@@ -183,16 +177,11 @@ Summary:
 This ISA is a simple 8-bit architecture with:
 
     4 general-purpose registers (RA, RB, RC, RE)
-
     Stack support with CALL/RET
-
     Arithmetic operations
-
+    FLAGS register to save/restore condition flags
     Basic memory I/O (direct and indirect)
-
     Conditional and unconditional jumps
-
     Flag-based conditional execution
-
     Immediate and memory-based addressing modes.
 
