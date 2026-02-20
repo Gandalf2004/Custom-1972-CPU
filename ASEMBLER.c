@@ -1,4 +1,4 @@
-//Copyright © Martin H. Sharp; August 2025
+//Copyright © Martin H. Sharp; February 2026; Version 1.1
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -55,7 +55,9 @@ typedef enum {
     OP_ADD,         OP_SUB,         OP_ADDR,    OP_SUBR,
     OP_OUT,         OP_CALL,        OP_RET,     OP_MOVA_PTRB,
     OP_STORA_PTRB,  OP_PUSH,        OP_POP,     OP_ADDSP,
-    OP_SUBSP,       OP_SSTOF,       OP_SSTUF,   OP_HLT = 0xFF
+    OP_SUBSP,       OP_SSTOF,       OP_SSTUF,   OP_MOVF,
+    OP_LOADF,
+    OP_HLT = 0xFF
 } Opcode_t;
 
 static const struct { const char *name; Opcode_t code; } opcode_table[] = {
@@ -69,6 +71,7 @@ static const struct { const char *name; Opcode_t code; } opcode_table[] = {
     {"MOVA_PTRB", OP_MOVA_PTRB},        {"STORA_PTRB", OP_STORA_PTRB},
     {"PUSH", OP_PUSH},      {"POP", OP_POP},        {"ADDSP", OP_ADDSP},
     {"SUBSP", OP_SUBSP},    {"SSTOF", OP_SSTOF},    {"SSTUF", OP_SSTUF},
+    {"MOVF", OP_MOVF},      {"LOADF", OP_LOADF},
     {"HLT", OP_HLT}
 };
 
@@ -167,6 +170,8 @@ int main(int argc, char *argv[]) {
             case OP_PUSH:
             case OP_POP:
             case OP_ADDR:
+            case OP_MOVF:
+            case OP_LOADF:
             case OP_SUBR:
                 if (tl->count < 2) error("Missing register operand", i, mnemonic);
                 operand = parse_register(tl->tok[1], i);
