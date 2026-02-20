@@ -1,4 +1,4 @@
-//Copyright © Martin H. Sharp; August 2025
+//Copyright © Martin H. Sharp; February 2026; Version 1.1
 #include <stdio.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -35,23 +35,31 @@ bool ZF = false; // Zero Flag
 bool NF = false; // Negative Flag
 bool OF = false; // Overflow Flag
 
-// Control Signals
+// FLAGS register (8-bit) and bit definitions
+uint8_t FLAGS = 0;
+#define FLAG_Z 0x01
+#define FLAG_N 0x02
+#define FLAG_O 0x04
+
+// Control Signals//currently not used
 bool sub_enable = false;
 
-// Bus (for simulation purposes only)
+// Bus (for simulation purposes only)//currently not used
 uint8_t bus = 0;
 
 // Opcodes
 enum OPCODE {
     MOVR = 0x01,
-    MOVA, MOVB, MOVC, MOVE,
-    STORA, STORB, STORC, STORE,
-    LDIMA, LDIMB, LDIMC, LDIME,
-    JMPN, JMPZ, JMPO, JMP,
-    ADD, SUB, ADDR, SUBR,
-    OUT, CALL, RET, MOVA_PTRB,
-    STORA_PTRB, PUSH, POP, 
-    ADDSP, SUBSP, SSTOF, SSTUF, HLT = 0xFF
+    MOVA,   MOVB,   MOVC,   MOVE,
+    STORA,  STORB,  STORC,  STORE,
+    LDIMA,  LDIMB,  LDIMC,  LDIME,
+    JMPN,   JMPZ,   JMPO,   JMP,
+    ADD,    SUB,    ADDR,   SUBR,
+    OUT,    CALL,   RET,    MOVA_PTRB,
+    STORA_PTRB,     PUSH,   POP, 
+    ADDSP,  SUBSP,  SSTOF,  SSTUF,
+    MOVF, LOADF,
+    HLT = 0xFF
 };
 
 // Helpers
@@ -59,6 +67,12 @@ void update_flags(int result) {
     ZF = (result == 0);
     NF = (result < 0);
     OF = (result > 255 || result < 0);
+
+    // update FLAGS register bits to reflect boolean flags
+    FLAGS = 0;
+    if (ZF) FLAGS |= FLAG_Z;
+    if (NF) FLAGS |= FLAG_N;
+    if (OF) FLAGS |= FLAG_O;
 }
 
 void alu_add(uint8_t value) {
@@ -104,8 +118,8 @@ void execute_instruction() {
     uint8_t operand = IR & 0xFF;
 
     if (DEBUG){
-        printf("%sPC=%02X IR=%04X STOFR=%d STUFR=%d %sOPCODE=%02X OPERAND=%02X %sRA=%d RB=%d RC=%d RE=%d %sZF=%d NF=%d OF=%d %sSP= %d%s\n",
-           MAGENTA, PC-1, IR, STOFR, STUFR, GREEN, opcode, operand, CYAN, RA, RB, RC, RE, YELLOW, ZF, NF, OF, BLUE, SP, RESET);
+        printf("%sPC=%02X IR=%04X STOFR=%d STUFR=%d %sOPCODE=%02X OPERAND=%02X %sRA=%d RB=%d RC=%d RE=%d %sZF=%d NF=%d OF=%d FLAGS=0x%02X %sSP= %d%s\n",
+           MAGENTA, PC-1, IR, STOFR, STUFR, GREEN, opcode, operand, CYAN, RA, RB, RC, RE, YELLOW, ZF, NF, OF, FLAGS, BLUE, SP, RESET);
     }
 
     switch(opcode) {
@@ -228,6 +242,23 @@ void execute_instruction() {
             SP = operand;
             break;
         };
+        case MOVF: {
+            // MOVF reg_code  ; reg = FLAGS
+            uint8_t *reg = get_register(operand);
+            if (reg) *reg = FLAGS;
+            break;
+        }
+        case LOADF: {
+            // LOADF reg_code ; FLAGS = reg ; update boolean flags
+            uint8_t *reg = get_register(operand);
+            if (reg) {
+                FLAGS = *reg;
+                ZF = (FLAGS & FLAG_Z) != 0;
+                NF = (FLAGS & FLAG_N) != 0;
+                OF = (FLAGS & FLAG_O) != 0;
+            }
+            break;
+        }
         case HLT: printf("%sProgramm Halted Execution%s\n", YELLOW, RESET); exit(0);
         default: printf("%sUnknown opcode: 0x%02X%s\n", RED, opcode, RESET); exit(1);
     }
