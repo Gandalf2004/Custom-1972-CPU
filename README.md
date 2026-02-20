@@ -62,13 +62,13 @@ The documentation for the ISA is in the [custom_ISA_DOKU.txt](custom_ISA_DOKU.tx
 ## On Linux
 ### Use the assembler to translate assembly into a binary:
 ```
-EC72ASM testprogramm.ec72asm test.bin -d  # with debug
-EC72ASM testprogramm.ec72asm test.bin     # without debug
+./EC72ASM testprogramm.ec72asm test.bin -d  # with debug
+./EC72ASM testprogramm.ec72asm test.bin     # without debug
 ```
 ### Run the emulator:
 ```
-EC72CPU test.bin -d  # with debug
-EC72CPU test.bin     # without debug
+./EC72CPU test.bin -d  # with debug
+./EC72CPU test.bin     # without debug
 ```
 ## syntax highlighting for the Custom Assembly
 look at my other project: [Syntax-highlighter-for-EC72ASM](https://github.com/Gandalf2004/Syntax-highlighter-for-EC72ASM)
